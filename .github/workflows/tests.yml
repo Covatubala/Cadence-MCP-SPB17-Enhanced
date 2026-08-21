@@ -1,0 +1,23 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-contracts:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile
+        run: python -m py_compile bridge/cadence_mcp.py bridge/test_bridge.py bridge/test_mcp_tools.py
+      - name: Protocol and schema regressions
+        run: python bridge/test_bridge.py
+      - name: Exercise every MCP tool
+        run: python bridge/test_mcp_tools.py
